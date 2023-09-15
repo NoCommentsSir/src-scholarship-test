@@ -57,17 +57,33 @@ class SparseMatrix:
         return A
 
     def __matmul__(self, other):
+        A1 = self.to_dense()
+        A2 = other.to_dense()
+        n_1 = len(A1[0])
+        n_2 = len(A2[0])
+        if n_1 != n_2:
+            print("Error: matrix shape error")
+            return
+        arr = []
+        for i in range(n_1):
+            arr.append([0 for _ in range(n_1)])
 
-        # vvvvv your code here vvvvv
-        result = SparseMatrix(dense=self.to_dense() @ other.to_dense())
-        # ^^^^^ your code here ^^^^^
-
+        for i in range(n_1):
+            for j in range(n_1):
+                for k in range(n_1):
+                    arr[i][j] += A1[i][k] * A2[k][j]
+        arr = np.array(arr)
+        result = SparseMatrix(dense=arr)
         return result
 
     def __pow__(self, power, modulo=None):
 
         # vvvvv your code here vvvvv
-        result = SparseMatrix(dense=np.linalg.matrix_power(self.to_dense(), power))
+        A = self
+        result = A
+        for i in range(1, power):
+            temp = result
+            result = temp.__matmul__(A)
         # ^^^^^ your code here ^^^^^
 
         return result
